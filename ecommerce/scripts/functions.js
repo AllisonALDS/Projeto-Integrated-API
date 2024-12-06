@@ -1,29 +1,20 @@
-export async function fetchProduct(id) {
-    const response = await fetch(`http://127.0.0.1:8000/api/produtos/${id}`);
-    console.log("Status da resposta:", response.status);
-    if (!response.ok) throw new Error("Produto não encontrado");
-
+async function fetchProduct(id) {
     try {
-        const response = await fetch(
-            `http://127.0.0.1:8000/api/produtos/${id}`
-        );
+        const response = await fetch(`http://127.0.0.1:8000/api/produtos/${id}`);
         if (!response.ok) throw new Error("Produto não encontrado");
-
+  
         const produto = await response.json();
-
+  
+        // Preencha os elementos HTML com os dados do produto
         document.getElementById("id").value = produto.id;
         document.getElementById("tituloProduto").value = produto.tituloProduto;
         document.getElementById("preco").value = produto.preco;
         document.getElementById("descricao").value = produto.descricao;
-        document.getElementById("imgProduto").value = produto.imgProduto;
         document.getElementById("catProduto").value = produto.catProduto;
         document.getElementById("classProduto").value = produto.classProduto;
         document.getElementById("exibirHome").value = produto.exibirHome;
-
+  
         const imageContainer = document.getElementById("imageContainer");
-        {
-            console.log("Imagem:zzz", produto.imgProduto);
-        }
         imageContainer.innerHTML = produto.imgProduto
             ? `<img src="http://127.0.0.1:8000/${produto.imgProduto}" alt="Imagem do Produto">`
             : "<p>Sem imagem</p>";
@@ -33,51 +24,49 @@ export async function fetchProduct(id) {
     }
 }
 
-export function loadProducts(productList, load) {
+  export function loadProducts(productList, load) {
     /* carrega os produtos na home e na pagina de prododus*/
+  
     productList.forEach((produto) => {
-        const valParcela = (produto.preco / 10).toFixed(2);
-        const html = `<div class="product-card idprod" id="${
-            produto.codigoProduto
-        }">
-        <div>
-          <img id="${produto.codigoProduto}"
-            src="${produto.imagemProduto.img1}"
-            alt="${produto.tituloProduto}"
-          />
-        </div>
-        <div class="product-card-info-container">
-
-          <h2 class="product-card-title" title="${produto.tituloProduto}">
-          ${produto.tituloProduto}
-          </h2>
-          
-          <h4 class="product-card-reference">Cod. ${produto.codigoProduto}</h4>
-          <h3 class="product-card-price">R$ ${produto.preco.toFixed(2)}</h3>
-          <h4 class="product-card-installment">
-            10x de R$ ${valParcela} s/juros
-          </h4>
-        </div>
-        <a href="./product.html">
-        <button id="${
-            produto.codigoProduto
-        }" class="product-card-btn">COMPRAR</button>
-        </a>
-      </div>`;
-        load.innerHTML += html;
+      let preco = parseFloat(produto.preco) || 0;
+      const precoFormatado = preco > 0 ? `R$ ${preco.toFixed(2)}` : "Preço indisponível";
+      const valParcela = (produto.preco / 10).toFixed(2);
+      const html = `<div class="product-card idprod" id="${produto.codigoProduto}">
+          <div>
+            <img id="${produto.codigoProduto}"
+              src="${produto.imagemProduto}"
+              alt="${produto.tituloProduto}"
+            />
+          </div>
+          <div class="product-card-info-container">
+  
+            <h2 class="product-card-title" title="${produto.tituloProduto}">
+            ${produto.tituloProduto}
+            </h2>
+            
+            <h4 class="product-card-reference">Cod. ${produto.codigoProduto}</h4>
+            <h3 class="product-card-price">R$ ${precoFormatado}</h3>
+            <h4 class="product-card-installment">
+              10x de R$ ${valParcela} s/juros
+            </h4>
+          </div>
+          <a href="./product.html">
+          <button id="${produto.codigoProduto}" class="product-card-btn">COMPRAR</button>
+          </a>
+        </div>`;
+      load.innerHTML += html;
     });
 }
 
 // captura o codigo/id do produto
-export function getProdId() {
-    let itens = document.querySelectorAll(".idprod");
-    console.log(itens);
-    itens.forEach((item) =>
-        item.addEventListener("click", (evento) => {
-            let prodID = evento.target.id;
-            localStorage.setItem("prodId", prodID);
-        })
-    );
+export function getProdId(){
+    let itens = document.querySelectorAll(".idprod")
+    console.log(itens)
+    itens.forEach(item => item.addEventListener('click',(evento)=>{
+        let prodID = evento.target.id
+        localStorage.setItem('prodId',prodID)
+        
+    }))
 }
 
 // localiza o produto na base de dados

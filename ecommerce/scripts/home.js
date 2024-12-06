@@ -1,7 +1,6 @@
 // Importação da base de dados e das funçoes
 
-import { database } from "./database.js";
-import { getProdId, fetchProduct} from "./functions.js";
+import { getProdId, loadProducts} from "./functions.js";
 
 // -------- Variaveis do projeto ------------------------
 const sectionNovidades = document.querySelector("#section-1 .carrousel")
@@ -9,17 +8,29 @@ const sectionMaisVendidos = document.querySelector("#section-2 .carrousel")
 const sectionPromocoes = document.querySelector("#section-3 .carrousel")
 
 
-//Fitros
-let filtroCategoriaNovidades = database.filter(produto => produto.classificacaoProduto === "Novidades" && produto.exibirHome == true )
-let filtroMaisVendidos = database.filter(produto => produto.classificacaoProduto === "Mais_Vendidos" && produto.exibirHome == true )
-let filtroPromocoes = database.filter(produto => produto.classificacaoProduto === "Promocoes" && produto.exibirHome == true )
+// //Fitros
+// let filtroCategoriaNovidades = database.filter(produto => produto.classificacaoProduto === "Novidades" && produto.exibirHome == true )
+// let filtroMaisVendidos = database.filter(produto => produto.classificacaoProduto === "Mais_Vendidos" && produto.exibirHome == true )
+// let filtroPromocoes = database.filter(produto => produto.classificacaoProduto === "Promocoes" && produto.exibirHome == true )
 
+
+async function fetchProductsByCategory(category, section) {
+  try {
+      const response = await fetch(`http://127.0.0.1:8000/api/produtos?classificacao=${category}&exibirHome=true`);
+      if (!response.ok) throw new Error("Erro ao carregar produtos");
+      const produtos = await response.json();
+      loadProducts(produtos, section);
+  } catch (error) {
+      console.error("Erro:", error);
+  }
+}
 
 //Funçoes com parametros
-loadProducts(filtroCategoriaNovidades,sectionNovidades);
-loadProducts(filtroMaisVendidos,sectionMaisVendidos);
-loadProducts(filtroPromocoes,sectionPromocoes);
-getProdId()
+fetchProductsByCategory("Lançamentos", sectionNovidades);
+fetchProductsByCategory("Mais_Vendidos", sectionMaisVendidos);
+fetchProductsByCategory("Promocoes", sectionPromocoes);
+
+getProdId();
 
 
 
