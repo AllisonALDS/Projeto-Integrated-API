@@ -19,6 +19,7 @@ async function fetchProductsByCategory(category, section) {
       const response = await fetch(`http://127.0.0.1:8000/api/produtos?classificacao=${category}&exibirHome=true`);
       if (!response.ok) throw new Error("Erro ao carregar produtos");
       const produtos = await response.json();
+      console.log(produtos)
       loadProducts(produtos, section);
   } catch (error) {
       console.error("Erro:", error);
